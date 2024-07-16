@@ -52,25 +52,31 @@ class SensorReader:
     def read_microphone_noise(self, duration=1):
         if not self.is_microphone_available():
             return None
-        sample_rate = 44100
-        recording = sd.rec(int(duration * sample_rate), samplerate=sample_rate, channels=1)
-        sd.wait()
-        noise = np.std(recording)
-        return noise
+        try:
+            sample_rate = 44100
+            recording = sd.rec(int(duration * sample_rate), samplerate=sample_rate, channels=1)
+            sd.wait()
+            noise = np.std(recording)
+            return noise
+        except Exception:
+            return None
 
     def read_webcam_noise(self):
         if not self.is_webcam_available():
             return None
-        cap = cv2.VideoCapture(0)
-        if not cap.isOpened():
+        try:
+            cap = cv2.VideoCapture(0)
+            if not cap.isOpened():
+                return None
+            ret, frame = cap.read()
+            cap.release()
+            if not ret:
+                return None
+            gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+            noise = np.std(gray_frame)
+            return noise
+        except Exception:
             return None
-        ret, frame = cap.read()
-        cap.release()
-        if not ret:
-            return None
-        gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        noise = np.std(gray_frame)
-        return noise
 
     def read_sensors(self):
         sensor_data = []
