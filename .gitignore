@@ -1,3 +1,4 @@
 env
 truerandom/__pycache__/
 truerandom.egg-info
+tests/__pycache__
