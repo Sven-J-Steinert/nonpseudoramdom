@@ -1,7 +1,7 @@
 import unittest
-import truerandom as random
+import nonpseudorandom as random
 
-class TestTrueRandom(unittest.TestCase):
+class TestNonPseudoRandom(unittest.TestCase):
 
     def test_random(self):
         rand_value = random.random()
