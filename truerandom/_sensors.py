@@ -9,15 +9,40 @@ class SensorReader:
 
     def detect_sensors(self):
         sensors = {}
-        if hasattr(psutil, "sensors_temperatures") and psutil.sensors_temperatures():
+        if self.is_cpu_temp_available():
             sensors['cpu_temp'] = self.read_cpu_temp
-        if sd.query_devices():
+        if self.is_microphone_available():
             sensors['mic_noise'] = self.read_microphone_noise
         if self.is_webcam_available():
             sensors['webcam_noise'] = self.read_webcam_noise
         return sensors
 
+    def is_cpu_temp_available(self):
+        try:
+            psutil.sensors_temperatures()
+            return True
+        except Exception:
+            return False
+
+    def is_microphone_available(self):
+        try:
+            sd.query_devices()
+            return True
+        except Exception:
+            return False
+
+    def is_webcam_available(self):
+        try:
+            cap = cv2.VideoCapture(0)
+            available = cap.isOpened()
+            cap.release()
+            return available
+        except Exception:
+            return False
+
     def read_cpu_temp(self):
+        if not self.is_cpu_temp_available():
+            return None
         temps = psutil.sensors_temperatures()
         for name, entries in temps.items():
             for entry in entries:
@@ -25,19 +50,17 @@ class SensorReader:
         return None
 
     def read_microphone_noise(self, duration=1):
+        if not self.is_microphone_available():
+            return None
         sample_rate = 44100
         recording = sd.rec(int(duration * sample_rate), samplerate=sample_rate, channels=1)
         sd.wait()
         noise = np.std(recording)
         return noise
 
-    def is_webcam_available(self):
-        cap = cv2.VideoCapture(0)
-        available = cap.isOpened()
-        cap.release()
-        return available
-
     def read_webcam_noise(self):
+        if not self.is_webcam_available():
+            return None
         cap = cv2.VideoCapture(0)
         if not cap.isOpened():
             return None
