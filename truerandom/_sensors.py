@@ -1,7 +1,6 @@
 import psutil
 import numpy as np
 import cv2
-import sounddevice as sd
 
 class SensorReader:
     def __init__(self):
@@ -26,6 +25,7 @@ class SensorReader:
 
     def is_microphone_available(self):
         try:
+            import sounddevice as sd
             sd.query_devices()
             return True
         except Exception:
@@ -33,10 +33,8 @@ class SensorReader:
 
     def is_webcam_available(self):
         try:
-            cap = cv2.VideoCapture(0)
-            available = cap.isOpened()
-            cap.release()
-            return available
+            cv2.VideoCapture(0).release()
+            return True
         except Exception:
             return False
 
@@ -53,6 +51,7 @@ class SensorReader:
         if not self.is_microphone_available():
             return None
         try:
+            import sounddevice as sd
             sample_rate = 44100
             recording = sd.rec(int(duration * sample_rate), samplerate=sample_rate, channels=1)
             sd.wait()
@@ -66,8 +65,6 @@ class SensorReader:
             return None
         try:
             cap = cv2.VideoCapture(0)
-            if not cap.isOpened():
-                return None
             ret, frame = cap.read()
             cap.release()
             if not ret:
