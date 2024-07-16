@@ -1,5 +1,9 @@
 # TrueRandom
 
+[![PyPI version](https://img.shields.io/pypi/v/truerandom.svg?logo=pypi&logoColor=FFE873)](https://pypi.org/project/truerandom/)
+[![Supported Python versions](https://img.shields.io/pypi/pyversions/truerandom.svg?logo=python&logoColor=FFE873)](https://pypi.org/project/truerandom/)
+[![PyPI downloads](https://img.shields.io/pypi/dm/truerandom.svg)](https://pypistats.org/packages/truerandom)
+
 TrueRandom is a Python package that generates true random numbers using sensor noise from your local system. It serves as a drop-in replacement for Python's native `random` module.
 
 ## Supported Sensors
