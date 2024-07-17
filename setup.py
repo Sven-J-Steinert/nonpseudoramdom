@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='nonpseudorandom',
-    version='0.1.1',
+    version='0.2.0',
     packages=find_packages(),
     install_requires=[
         'psutil',
@@ -15,7 +15,7 @@ setup(
     description='A true random number generator using system sensor noise',
     long_description=open('README.md').read(),
     long_description_content_type='text/markdown',
-    url='https://github.com/Sven-J-Steinert/truerandom',
+    url='https://github.com/Sven-J-Steinert/nonpseudorandom',
     classifiers=[
         'Programming Language :: Python :: 3',
         'License :: OSI Approved :: MIT License',
