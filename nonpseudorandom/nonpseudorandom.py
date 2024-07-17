@@ -1,4 +1,5 @@
 import numpy as np
+import hashlib
 from ._sensors import SensorReader
 
 sensor_reader = SensorReader()
@@ -8,8 +9,8 @@ def seed(a=None):
         np.random.seed(a)
     else:
         sensor_data = sensor_reader.read_sensors()
-        random_seed = np.sum(sensor_data)
-        np.random.seed(int(random_seed))
+        random_seed = hash(sensor_data)
+        np.random.seed(random_seed)
 
 def random():
     seed()
@@ -35,3 +36,10 @@ def sample(population, k):
 def uniform(a, b):
     seed()
     return np.random.uniform(a, b)
+
+def hash(obj):
+    array_bytes = np.array(obj).tobytes()
+    hash_object = hashlib.sha256(array_bytes)
+    hash_digest = hash_object.hexdigest()
+    hash_int = int(hash_digest, 16) % (2**32)
+    return hash_int

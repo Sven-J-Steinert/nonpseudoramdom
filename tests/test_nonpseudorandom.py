@@ -1,5 +1,7 @@
 import unittest
 import nonpseudorandom as random
+import numpy as np
+from tqdm import tqdm
 
 class TestNonPseudoRandom(unittest.TestCase):
 
@@ -34,6 +36,34 @@ class TestNonPseudoRandom(unittest.TestCase):
         value = random.uniform(1.0, 10.0)
         self.assertGreaterEqual(value, 1.0)
         self.assertLess(value, 10.0)
+
+    def test_distribution(self):
+        samples = []
+        for _ in tqdm(range(100), desc="Generating samples"):
+            samples.append(random.random())
+        
+        mean = np.mean(samples)
+        variance = np.var(samples)
+
+        observed, _ = np.histogram(samples, bins=10, range=(0, 1))
+
+        print("Histogram:")
+        for i, count in enumerate(observed):
+            bin_range = f"{_[i]:.2f} - {_[i+1]:.2f}"
+            bar = '#' * int(count)
+            print(f"{bin_range.ljust(8)} | {bar}")
+        
+        self.assertAlmostEqual(mean, 0.5, delta=0.1)
+        self.assertAlmostEqual(variance, 1/12, delta=0.1)
+
+        total_samples = len(samples)
+        expected = [total_samples / 10] * 10
+
+        # Perform Chi-Square test
+        chi_square_statistic = ((observed - expected) ** 2 / expected).sum()
+        chi_square_critical = 16.92 # 95% confidence level (9doF)
+        self.assertLess(chi_square_statistic, chi_square_critical)
+
 
 if __name__ == '__main__':
     unittest.main()

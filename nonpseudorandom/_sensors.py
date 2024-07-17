@@ -2,6 +2,11 @@ import psutil
 import numpy as np
 import cv2
 
+try:
+    import sounddevice as sd
+except Exception:
+    pass
+
 class SensorReader:
     def __init__(self):
         self.available_sensors = self.detect_sensors()
@@ -25,7 +30,6 @@ class SensorReader:
 
     def is_microphone_available(self):
         try:
-            import sounddevice as sd
             sd.query_devices()
             return True
         except Exception:
@@ -44,19 +48,19 @@ class SensorReader:
         temps = psutil.sensors_temperatures()
         for name, entries in temps.items():
             for entry in entries:
+                #print('cpu used')
                 return entry.current
         return None
 
-    def read_microphone_noise(self, duration=1):
+    def read_microphone_noise(self, duration=0.001):
         if not self.is_microphone_available():
             return None
         try:
-            import sounddevice as sd
             sample_rate = 44100
             recording = sd.rec(int(duration * sample_rate), samplerate=sample_rate, channels=1)
             sd.wait()
-            noise = np.std(recording)
-            return noise
+            #print('mic used')
+            return recording
         except Exception:
             return None
 
@@ -70,8 +74,8 @@ class SensorReader:
             if not ret:
                 return None
             gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-            noise = np.std(gray_frame)
-            return noise
+            #print('img used')
+            return gray_frame
         except Exception:
             return None
 
@@ -82,3 +86,4 @@ class SensorReader:
             if data is not None:
                 sensor_data.append(data)
         return sensor_data
+
