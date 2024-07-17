@@ -38,9 +38,7 @@ class TestNonPseudoRandom(unittest.TestCase):
         self.assertLess(value, 10.0)
 
     def test_distribution(self):
-        samples = []
-        for _ in tqdm(range(100), desc="Generating samples"):
-            samples.append(random.random())
+        samples = [random.random() for _ in range(100)]
         
         mean = np.mean(samples)
         variance = np.var(samples)
