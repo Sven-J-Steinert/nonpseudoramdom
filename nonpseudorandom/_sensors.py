@@ -1,6 +1,7 @@
 import psutil
 import numpy as np
 import cv2
+import time
 
 try:
     import sounddevice as sd
@@ -15,10 +16,12 @@ class SensorReader:
         sensors = {}
         if self.is_cpu_temp_available():
             sensors['cpu_temp'] = self.read_cpu_temp
-        if self.is_microphone_available():
-            sensors['mic_noise'] = self.read_microphone_noise
         if self.is_webcam_available():
             sensors['webcam_noise'] = self.read_webcam_noise
+        if self.is_microphone_available():
+            sensors['mic_noise'] = self.read_microphone_noise
+        sensors['timer_fallback'] = self.timer_fallback
+        print('used sensors:'," ".join(sensors.keys()))
         return sensors
 
     def is_cpu_temp_available(self):
@@ -37,10 +40,19 @@ class SensorReader:
 
     def is_webcam_available(self):
         try:
-            cv2.VideoCapture(0).release()
+            cap = cv2.VideoCapture(0)
+            ret, frame = cap.read()
+            cap.release()
+            if not ret:
+                return False
             return True
         except Exception:
             return False
+        
+    def timer_fallback(self):
+        read = time.time() * 1e7
+        time.sleep(0.001)
+        return read
 
     def read_cpu_temp(self):
         if not self.is_cpu_temp_available():
