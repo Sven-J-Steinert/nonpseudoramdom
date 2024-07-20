@@ -20,9 +20,10 @@ class TestNonPseudoRandom(unittest.TestCase):
         self.assertIn(choice, seq)
 
     def test_shuffle(self):
+        ref = [1, 2, 3, 4, 5]
         seq = [1, 2, 3, 4, 5]
-        shuffled_seq = random.shuffle(seq)
-        self.assertEqual(set(seq), set(shuffled_seq))
+        random.shuffle(seq)
+        self.assertNotEqual(ref, seq)
 
     def test_sample(self):
         population = [1, 2, 3, 4, 5]
